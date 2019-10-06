@@ -1,0 +1,6 @@
+site_api.nodejson:
+  path: '/page_json/{api_key}/{nid}'
+  defaults:
+    _controller: '\Drupal\site_api\Controller\NodeJsonController::NodeJsonOutput'
+  requirements:
+    _permission: 'access content'

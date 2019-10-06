@@ -1,0 +1,40 @@
+<?php
+
+
+/**
+ @file
+ * Custom module to add site api key
+ */
+use Drupal\core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_alter().
+ */
+function site_api_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id){
+	if($form_id == 'system_site_information_settings') {
+		$config = \Drupal::config('system.site');
+		$form['siteapikey'] = [
+      	  '#type' => 'textfield',
+      	  '#title' => 'Site Api key',
+      	  '#default_value' => $config->get('siteapikey'),
+      	  '#attributes' => array('placeholder' => t('No API key yet'),)
+    	];
+      //update the Save configuration lable
+    	$form['actions']['submit']['#value'] = t('Update Configuration');
+    	$form['#submit'][] = '_set_site_api_key';
+	}
+}
+
+/**
+ * Custom submit function 
+ * stores api key
+ */
+function _set_site_api_key(array &$form, FormStateInterface $form_state) {
+	//Store site api key
+  $api_key_value = $form_state->getValue('siteapikey');
+	\Drupal::configFactory()->getEditable('system.site')
+    ->set('siteapikey', $api_key_value)
+    ->save();
+  //set a message after API key update
+  \Drupal::messenger()->addMessage(t('Site API key '.$api_key_value.' is saved.'), 'status', TRUE);
+}
